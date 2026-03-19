@@ -18,10 +18,8 @@ from Page1.Instapost import insta
 #Setup
 @given("user opens quotes website")
 def open_site(context):
-    context.driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
     context.driver.get("https://techbrain.ai")
     context.driver.maximize_window()
-    # initialize each class separately
     context.dashboard = Dashboard(context.driver)
     context.signup   = Signupp(context.driver)
     context.intro_ruby = Intro_ruby(context.driver)
