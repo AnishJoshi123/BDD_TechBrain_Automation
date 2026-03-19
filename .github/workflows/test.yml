@@ -1,6 +1,5 @@
 name: Run Selenium BDD Tests
 
-# Triggers: runs on every push or pull request to main
 on:
   push:
     branches: [ main ]
@@ -12,64 +11,44 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-
-      # Step 1: Pull your repo code into the runner
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # Step 2: Install Python 3.10
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.10'
 
-      # Step 3: Install your Python dependencies (selenium, behave, webdriver-manager)
       - name: Install dependencies
         run: |
           pip install --upgrade pip
-          pip install -r requirements.txt
+          pip install selenium behave webdriver-manager
 
-      # Step 4: Install Google Chrome (stable)
       - name: Install Chrome
         run: |
           sudo apt-get update
           sudo apt-get install -y google-chrome-stable
 
-      # Step 5: Install matching ChromeDriver using webdriver-manager
-      # This avoids version mismatch between Chrome and ChromeDriver
       - name: Install ChromeDriver
         run: |
           python -c "
           from webdriver_manager.chrome import ChromeDriverManager
-          from selenium.webdriver.chrome.service import Service
           ChromeDriverManager().install()
           print('ChromeDriver installed successfully')
           "
 
-      # Step 6: Run your BDD tests
-      # - PYTHONPATH=. ensures imports like 'from Page1.Dashboard import Dashboard' work
-      # - HEADLESS=true tells environment.py to run Chrome in headless mode
-      # - --no-capture shows print() output in logs
-      # - --format=plain gives clean readable output
-      # - allure-behave formatter saves results for the report (Step 7)
       - name: Run BDD tests
         env:
           PYTHONPATH: .
           HEADLESS: "true"
         run: |
-          pip install allure-behave
-          behave features/ \
-            --no-capture \
-            --format=plain \
-            --format=allure_behave.formatter:AllureFormatter \
-            --outfile=allure-results
-        continue-on-error: true   # Don't stop pipeline if tests fail — still upload report
+          behave features/ --no-capture --format=plain
+        continue-on-error: true
 
-      # Step 7: Upload raw test results as a downloadable artifact in GitHub Actions
       - name: Upload test results
         uses: actions/upload-artifact@v4
-        if: always()              # Run this even if tests failed
+        if: always()
         with:
-          name: behave-allure-results
-          path: allure-results/
-          retention-days: 7       # Keep results for 7 days
+          name: behave-results
+          path: behave-results/
+          retention-days: 7
