@@ -14,7 +14,7 @@ Scenario: Verify create a new account by filling signup form
     Given user opens quotes website
     When user click login button
     And user click on signup button
-    And user enter email "romeo3433321@gmail.com" and password "Rider123@@##" and confirm password "Rider123@@##"
+    And user enter email "rom3433321@gmail.com" and password "Rider123@@##" and confirm password "Rider123@@##"
     And user click on submit button
     Then the confirmation message should be "Woops! It looks like you reached a bad page :("
 
